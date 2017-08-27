@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp1.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ShoppingCart.Actors\ShoppingCart.Actors.csproj" />
+    <ProjectReference Include="..\ShoppingCart.Data\ShoppingCart.Data.csproj" />
+  </ItemGroup>
+
+</Project>

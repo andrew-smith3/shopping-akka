@@ -10,9 +10,9 @@ namespace ShoppingCart.Data.Models
 
         private readonly List<Product> _products;
 
-        public Cart()
+        public Cart(Guid userId)
         {
-            UserId = Guid.NewGuid();
+            UserId = userId;
             _products = new List<Product>();
         }
 

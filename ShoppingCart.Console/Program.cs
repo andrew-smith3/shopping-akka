@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Extensions.Configuration;
 using ShoppingCart.Actors;
 using ShoppingCart.Data.Models;
 
@@ -15,7 +16,7 @@ namespace ShoppingCart.Console
 
         static void Basic()
         {
-            var cart = new Cart();
+            var cart = new Cart(Guid.NewGuid());
             cart.AddProductToCart(new Product { Name = "Foo" });
             cart.AddProductToCart(new Product { Name = "Bar" });
             cart.AddProductToCart(new Product { Name = "Foo" });
@@ -27,8 +28,8 @@ namespace ShoppingCart.Console
         {
             var system = new CartSystem();
 
-            var fred = Guid.NewGuid();
-            var bob = Guid.NewGuid();
+            var fred = Guid.Parse("b3e1e5c3-83e7-466b-9165-639e95db1342");
+            var bob = Guid.Parse("484ab3db-0fd2-4342-88cf-f1e1f13427f0");
 
             var apple = new Product {Name = "Apple"};
             var cherry = new Product {Name = "Cherry"};

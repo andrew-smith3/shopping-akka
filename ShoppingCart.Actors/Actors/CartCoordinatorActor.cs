@@ -26,7 +26,7 @@ namespace ShoppingCart.Actors.Actors
         {
             Receive<AddItemToCartCommand>(c =>
             {
-                var childName = c.UserId.ToString();
+                var childName = nameof(CartActor) + c.UserId.ToString();
 
                 var child = Context.Child(childName);
 

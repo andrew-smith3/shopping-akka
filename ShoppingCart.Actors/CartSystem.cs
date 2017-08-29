@@ -31,6 +31,7 @@ namespace ShoppingCart.Actors
 
             var consoleWriterActor = _system.ActorOf(ConsoleWriterActor.CreateProps());
             _cartCoordinatorActor = _system.ActorOf(CartCoordinatorActor.CreateProps(consoleWriterActor));
+            var eventHub = _system.ActorOf(EventHubActor.CreateProps(), "eventhub");
         }
 
         public void AddItemToCart(Guid userId, Product product)

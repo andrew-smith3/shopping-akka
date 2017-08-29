@@ -5,16 +5,16 @@ using ShoppingCart.Data.Models;
 
 namespace ShoppingCart.Console
 {
-    class Program
+    public class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             System.Console.WriteLine("Hello World!");
             Actors();
             System.Console.ReadKey();
         }
 
-        static void Basic()
+        public static void Basic()
         {
             var cart = new Cart(Guid.NewGuid());
             cart.AddProductToCart(new Product { Name = "Foo" });
@@ -24,7 +24,7 @@ namespace ShoppingCart.Console
             System.Console.WriteLine(cart.ToString());
         }
 
-        static void Actors()
+        public static void Actors()
         {
             var system = new CartSystem();
 

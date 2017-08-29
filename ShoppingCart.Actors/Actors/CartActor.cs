@@ -5,6 +5,7 @@ using Akka.Actor;
 using Akka.Persistence;
 using Newtonsoft.Json;
 using ShoppingCart.Data.Commands;
+using ShoppingCart.Data.Events;
 using ShoppingCart.Data.Models;
 
 namespace ShoppingCart.Actors.Actors
@@ -21,7 +22,7 @@ namespace ShoppingCart.Actors.Actors
         private readonly Guid _userId;
         private readonly IActorRef _consoleWriterActor;
         private Cart _cart;
-        private int _commandsSinceSnapshot = 0;
+        private int _eventsSinceSnapshot = 0;
 
         public CartActor(Guid userId, IActorRef consoleWriterActor)
         {
@@ -34,9 +35,9 @@ namespace ShoppingCart.Actors.Actors
 
         private void Ready()
         {
-            Recover<AddItemToCartCommand>(command =>
+            Recover<ItemAddedToCart>(ev =>
             {
-                _cart.AddProductToCart(command.Product);
+                UpdateState(ev);
             });
 
             Recover<SnapshotOffer>(offer =>
@@ -48,19 +49,22 @@ namespace ShoppingCart.Actors.Actors
                 }
             });
 
-            Command<AddItemToCartCommand>(command => Persist(command , c =>
+            Command<AddItemToCartCommand>(command =>
             {
-                //should do some validation
-
-                _cart.AddProductToCart(command.Product);
-                if (++_commandsSinceSnapshot % 3 == 0)
+                if (IsValidCommand(command))
                 {
-                    SaveSnapshot(JsonConvert.SerializeObject(_cart));
-                }
-
-
-                _consoleWriterActor.Tell(_cart.ToString());
-            }));
+                    Persist(new ItemAddedToCart(command.UserId, command.Product), ev =>
+                    {
+                        UpdateState(ev);
+                        if (++_eventsSinceSnapshot % 3 == 0)
+                        {
+                            SaveSnapshot(JsonConvert.SerializeObject(_cart));
+                        }
+                        Context.ActorSelection("akka://CartActorSystem/user/eventhub").Tell(ev);
+                        _consoleWriterActor.Tell(_cart.ToString());
+                    });
+                };
+            });
 
             Command<SaveSnapshotSuccess>(x =>
             {
@@ -73,5 +77,18 @@ namespace ShoppingCart.Actors.Actors
             });
         }
 
+        private bool IsValidCommand(AddItemToCartCommand command)
+        {
+            if (command.Product.Name == "orange")
+            {
+                return false;
+            }
+            return true;
+        }
+
+        private void UpdateState(ItemAddedToCart ev)
+        {
+            _cart.AddProductToCart(ev.Product);
+        }
     }
 }

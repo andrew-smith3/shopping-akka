@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Akka.Actor;
+﻿using Akka.Actor;
 using ShoppingCart.Data.Commands;
 
 namespace ShoppingCart.Actors.Actors
@@ -26,13 +23,13 @@ namespace ShoppingCart.Actors.Actors
         {
             Receive<AddItemToCartCommand>(c =>
             {
-                var childName = nameof(CartActor) + c.UserId.ToString();
+                var childName = CartActor.GetName(c.UserId);
 
                 var child = Context.Child(childName);
 
                 if (child == ActorRefs.Nobody)
                 {
-                    var props = Props.Create(() => new CartActor(c.UserId, _consoleWriterActor));
+                    var props = CartActor.CreateProps(c.UserId, _consoleWriterActor);
                     child = Context.ActorOf(props, childName);
                 }
 

@@ -7,7 +7,9 @@ namespace ShoppingCart.Data.Projections
 {
     public class CartProjection : Projection
     {
-        public override string Type => "CartProjection";
+        public static string ProjectionType = nameof(CartProjection);
+
+        public override string Type => ProjectionType;
 
         public List<Product> Products { get; }
 

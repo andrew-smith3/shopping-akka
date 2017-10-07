@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using Akka.Actor;
-using Akka.Persistence.Query;
-using Akka.Persistence.Query.Sql;
-using Akka.Streams;
+using Newtonsoft.Json;
 using ShoppingCart.Data.Events;
+using ShoppingCart.Data.Models;
+using ShoppingCart.Data.Projections;
+using ShoppingCart.Data.ProjectionStore;
 
 namespace ShoppingCart.Actors.Actors.Projections
 {
@@ -14,24 +16,44 @@ namespace ShoppingCart.Actors.Actors.Projections
             return Props.Create(() => new CartProjectionActor(userId));
         }
 
-        public CartProjectionActor(Guid userId)
+        public static string GetName(Guid userId)
         {
-            var readJournal = PersistenceQuery.Get(Context.System)
-                .ReadJournalFor<SqlReadJournal>(SqlReadJournal.Identifier);
-
-            var mat = ActorMaterializer.Create(Context.System);
-            var source = readJournal.EventsByPersistenceId($"Cart {userId}", 0L, long.MaxValue);
-            source.RunForeach(envelope =>
-            {
-                Console.WriteLine($"Projection: {envelope.Event.ToString()}");
-            }, mat);
+            return $"{nameof(CartProjectionActor)}{userId}";
         }
 
-        public void Ready()
-        {
-            Receive<CartUpdated>(cu =>
-            {
+        private readonly Guid _userId;
+        private readonly SqliteProjectionStore _projectionStore = new SqliteProjectionStore();
+        private CartProjection _cartProjection;
 
+        public CartProjectionActor(Guid userId)
+        {
+            _userId = userId;
+
+            InitializeProjection();
+
+            Ready();
+        }
+
+        private void InitializeProjection()
+        {
+            var data = _projectionStore.Retrieve(_userId, CartProjection.ProjectionType);
+            if (data == string.Empty)
+            {
+                _cartProjection = new CartProjection(_userId, new List<Product>(), 0);
+            }
+            else
+            {
+                _cartProjection = JsonConvert.DeserializeObject<CartProjection>(data);
+            }
+        }
+
+        private void Ready()
+        {
+            Receive<ItemAddedToCart>(i =>
+            {
+                _cartProjection.Products.Add(i.Product);
+
+                _projectionStore.Store(_userId, _cartProjection.Type, JsonConvert.SerializeObject(_cartProjection));
             });
         }
     }

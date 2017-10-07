@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Akka.Actor;
 using Akka.Persistence;
 using Newtonsoft.Json;
@@ -17,7 +15,12 @@ namespace ShoppingCart.Actors.Actors
             return Props.Create(() => new CartActor(userId, consoleWriterActor));
         }
 
-        public override string PersistenceId => $"Cart {_userId}"; 
+        public static string GetName(Guid userId)
+        {
+            return $"CartActor{userId}";
+        }
+
+        public override string PersistenceId => GetName(_userId); 
 
         private readonly Guid _userId;
         private readonly IActorRef _consoleWriterActor;
@@ -60,8 +63,7 @@ namespace ShoppingCart.Actors.Actors
                         {
                             SaveSnapshot(JsonConvert.SerializeObject(_cart));
                         }
-                        Context.ActorSelection("akka://CartActorSystem/user/eventhub").Tell(ev);
-                        _consoleWriterActor.Tell(_cart.ToString());
+                        Context.System.EventStream.Publish(ev);
                     });
                 };
             });

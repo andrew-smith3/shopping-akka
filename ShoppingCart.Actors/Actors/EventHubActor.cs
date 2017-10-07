@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Akka.Actor;
+﻿using Akka.Actor;
 using ShoppingCart.Actors.Actors.Projections;
-using ShoppingCart.Data.Events;
 
 namespace ShoppingCart.Actors.Actors
 {
@@ -16,23 +12,9 @@ namespace ShoppingCart.Actors.Actors
 
         public EventHubActor()
         {
-            Ready();
-        }
+            Context.ActorOf(CartProjectionCoordinatorActor.CreateProps());
 
-        public void Ready()
-        {
-            Receive<ItemAddedToCart>(ev =>
-            {
-                var childName = nameof(CartProjectionActor) + ev.UserId.ToString();
-
-                var child = Context.Child(childName);
-
-                if (child == ActorRefs.Nobody)
-                {
-                    var props = CartProjectionActor.CreateProps(ev.UserId);
-                    child = Context.ActorOf(props, childName);
-                }
-            });
+            
         }
     }
 }

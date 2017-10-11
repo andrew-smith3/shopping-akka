@@ -1,13 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.10
+VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShoppingCart.Data", "ShoppingCart.Data\ShoppingCart.Data.csproj", "{9D7F229B-61C0-4BA8-B72A-8420FFD0A8F2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShoppingCart.Actors", "ShoppingCart.Actors\ShoppingCart.Actors.csproj", "{088C67F3-2FB2-433E-85E6-D22E1D2F8CDF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShoppingCart.Console", "ShoppingCart.Console\ShoppingCart.Console.csproj", "{35B3B04A-D007-43F2-97E7-183936354F77}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShoppingCart.WebApi", "ShoppingCart.WebApi\ShoppingCart.WebApi.csproj", "{C6C89CD5-000A-4352-AC89-2EA9EF49F834}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShoppingCart.Domain", "ShoppingCart.Domain\ShoppingCart.Domain.csproj", "{A7ECDA33-7F41-4856-9280-A4747B8E11B0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +31,14 @@ Global
 		{35B3B04A-D007-43F2-97E7-183936354F77}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{35B3B04A-D007-43F2-97E7-183936354F77}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{35B3B04A-D007-43F2-97E7-183936354F77}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6C89CD5-000A-4352-AC89-2EA9EF49F834}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6C89CD5-000A-4352-AC89-2EA9EF49F834}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6C89CD5-000A-4352-AC89-2EA9EF49F834}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6C89CD5-000A-4352-AC89-2EA9EF49F834}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7ECDA33-7F41-4856-9280-A4747B8E11B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7ECDA33-7F41-4856-9280-A4747B8E11B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7ECDA33-7F41-4856-9280-A4747B8E11B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7ECDA33-7F41-4856-9280-A4747B8E11B0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

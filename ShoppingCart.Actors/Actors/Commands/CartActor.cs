@@ -4,7 +4,7 @@ using Akka.Persistence;
 using Newtonsoft.Json;
 using ShoppingCart.Data.Commands;
 using ShoppingCart.Data.Events;
-using ShoppingCart.Data.Models;
+using ShoppingCart.Domain;
 
 namespace ShoppingCart.Actors.Actors
 {
@@ -25,7 +25,6 @@ namespace ShoppingCart.Actors.Actors
         private readonly Guid _userId;
         private readonly IActorRef _consoleWriterActor;
         private Cart _cart;
-        private int _eventsSinceSnapshot = 0;
 
         public CartActor(Guid userId, IActorRef consoleWriterActor)
         {
@@ -56,15 +55,15 @@ namespace ShoppingCart.Actors.Actors
             {
                 if (IsValidCommand(command))
                 {
-                    Persist(new ItemAddedToCart(command.UserId, command.Product), ev =>
-                    {
-                        UpdateState(ev);
-                        if (++_eventsSinceSnapshot % 3 == 0)
-                        {
-                            SaveSnapshot(JsonConvert.SerializeObject(_cart));
-                        }
-                        Context.System.EventStream.Publish(ev);
-                    });
+//                    Persist(new ItemAddedToCart(command.UserId, command.Product), ev =>
+//                    {
+//                        UpdateState(ev);
+//                        if (LastSequenceNr % 3 == 0)
+//                        {
+//                            SaveSnapshot(JsonConvert.SerializeObject(_cart));
+//                        }
+//                        Context.System.EventStream.Publish(ev);
+//                    });
                 };
             });
 
@@ -81,16 +80,16 @@ namespace ShoppingCart.Actors.Actors
 
         private bool IsValidCommand(AddItemToCartCommand command)
         {
-            if (command.Product.Name == "orange")
-            {
-                return false;
-            }
+//            if (command.Product.Name == "orange")
+//            {
+//                return false;
+//            }
             return true;
         }
 
         private void UpdateState(ItemAddedToCart ev)
         {
-            _cart.AddProductToCart(ev.Product);
+//            _cart.AddProductToCart(ev.Product);
         }
     }
 }

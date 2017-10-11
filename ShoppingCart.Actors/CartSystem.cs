@@ -1,19 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Configuration;
 using Akka.Persistence.Sqlite;
 using ShoppingCart.Actors.Actors;
 using ShoppingCart.Data.Commands;
-using ShoppingCart.Data.Models;
+using ShoppingCart.Data.Commands.Inventory;
 
 namespace ShoppingCart.Actors
 {
     public class CartSystem
     {
         private readonly ActorSystem _system;
-        private readonly IActorRef _cartCoordinatorActor;
+        private readonly IActorRef _commandActor;
         private readonly IActorRef _eventHubActor;
 
         public CartSystem()
@@ -30,16 +31,18 @@ namespace ShoppingCart.Actors
             _system = ActorSystem.Create("CartActorSystem", config);
             SqlitePersistence.Get(_system);
 
-            var consoleWriterActor = _system.ActorOf(ConsoleWriterActor.CreateProps());
-            _cartCoordinatorActor = _system.ActorOf(CartCoordinatorActor.CreateProps(consoleWriterActor));
+            _commandActor = _system.ActorOf(CommandActor.CreateProps(), "commandActor");
             _eventHubActor = _system.ActorOf(EventHubActor.CreateProps(), "eventhub");
         }
 
-        public void AddItemToCart(Guid userId, Product product)
+        public async Task<string> AddNewProduct(AddNewProductCommand command)
         {
-            var command = new AddItemToCartCommand(userId, product);
+            return await _commandActor.Ask<string>(command);
+        }
 
-            _cartCoordinatorActor.Tell(command);
+        public async Task<string> RestockProduct(RestockProductCommand command)
+        {
+            return await _commandActor.Ask<string>(command);
         }
     }
 }

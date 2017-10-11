@@ -13,8 +13,7 @@ namespace ShoppingCart.Actors.Actors
         public EventHubActor()
         {
             Context.ActorOf(CartProjectionCoordinatorActor.CreateProps());
-
-            
+            Context.ActorOf(InventoryProjectionActor.CreateProps());
         }
     }
 }

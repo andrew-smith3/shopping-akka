@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Newtonsoft.Json;
-using ShoppingCart.Data.Models;
 
 namespace ShoppingCart.Data.Events
 {
@@ -10,23 +7,23 @@ namespace ShoppingCart.Data.Events
     {
         public Guid UserId { get; }
 
-        public Product Product { get; }
+        public Guid ProductId { get; }
 
-        public ItemAddedToCart(Guid userId, Product product) 
-            : this(Guid.NewGuid(), DateTime.Now, userId, product)
+        public ItemAddedToCart(Guid userId, Guid productId) 
+            : this(Guid.NewGuid(), DateTime.Now, userId, productId)
         {
         }
 
         [JsonConstructor]
-        public ItemAddedToCart(Guid id, DateTime date, Guid userId, Product product) : base(id, date)
+        public ItemAddedToCart(Guid id, DateTime date, Guid userId, Guid productId) : base(id, date)
         {
             UserId = userId;
-            Product = product;
+            ProductId = productId;
         }
 
         public override string ToString()
         {
-            return $"{Product.Name} added to {UserId} cart";
+            return $"{ProductId} added to {UserId} cart";
         }
     }
 }

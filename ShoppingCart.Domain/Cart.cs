@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 
-namespace ShoppingCart.Data.Models
+namespace ShoppingCart.Domain
 {
     public class Cart
     {
@@ -28,7 +28,7 @@ namespace ShoppingCart.Data.Models
             Products.Add(product);
         }
 
-        public int GetSubtotal()
+        public double GetSubtotal()
         {
             return Products.Sum(x => x.Price);
         }

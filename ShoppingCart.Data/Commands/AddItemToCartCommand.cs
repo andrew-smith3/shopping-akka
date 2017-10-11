@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using ShoppingCart.Data.Models;
 
 namespace ShoppingCart.Data.Commands
 {
@@ -9,13 +8,12 @@ namespace ShoppingCart.Data.Commands
     {
         public Guid UserId { get; }
 
-        public Product Product { get; }
+        public Guid ProductId { get; }
 
-        public AddItemToCartCommand(Guid userId, Product product)
+        public AddItemToCartCommand(Guid userId, Guid productId)
         {
             UserId = userId;
-
-            Product = product;
+            ProductId = productId;
         }
     }
 }

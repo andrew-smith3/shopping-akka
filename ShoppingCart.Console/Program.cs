@@ -1,7 +1,6 @@
 ﻿using System;
-using Microsoft.Extensions.Configuration;
 using ShoppingCart.Actors;
-using ShoppingCart.Data.Models;
+using ShoppingCart.Domain;
 
 namespace ShoppingCart.Console
 {
@@ -11,6 +10,7 @@ namespace ShoppingCart.Console
         {
             System.Console.WriteLine("Hello World!");
             Actors();
+            System.Console.WriteLine("Done");
             System.Console.ReadKey();
         }
 
@@ -34,12 +34,11 @@ namespace ShoppingCart.Console
             var apple = new Product {Name = "Apple"};
             var cherry = new Product {Name = "Cherry"};
 
-            system.AddItemToCart(fred, apple);
-            System.Console.ReadKey();
-            system.AddItemToCart(bob, cherry);
-            system.AddItemToCart(bob, apple);
-            system.AddItemToCart(fred, cherry);
-            system.AddItemToCart(fred, cherry);
+//            system.AddItemToCart(fred, apple);
+//            system.AddItemToCart(bob, cherry);
+//            system.AddItemToCart(bob, apple);
+//            system.AddItemToCart(fred, cherry);
+//            system.AddItemToCart(fred, cherry);
         }
     }
 }

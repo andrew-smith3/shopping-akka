@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Akka.Actor;
 using Newtonsoft.Json;
 using ShoppingCart.Data.Events;
-using ShoppingCart.Data.Models;
 using ShoppingCart.Data.Projections;
 using ShoppingCart.Data.ProjectionStore;
 
@@ -39,7 +38,7 @@ namespace ShoppingCart.Actors.Actors.Projections
             var data = _projectionStore.Retrieve(_userId, CartProjection.ProjectionType);
             if (data == string.Empty)
             {
-                _cartProjection = new CartProjection(_userId, new List<Product>(), 0);
+//                _cartProjection = new CartProjection(_userId, new List<Product>(), 0);
             }
             else
             {
@@ -51,7 +50,7 @@ namespace ShoppingCart.Actors.Actors.Projections
         {
             Receive<ItemAddedToCart>(i =>
             {
-                _cartProjection.Products.Add(i.Product);
+//                _cartProjection.Products.Add(i.Product);
 
                 _projectionStore.Store(_userId, _cartProjection.Type, JsonConvert.SerializeObject(_cartProjection));
             });

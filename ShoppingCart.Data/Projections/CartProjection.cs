@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using ShoppingCart.Data.Models;
 
 namespace ShoppingCart.Data.Projections
 {
@@ -11,13 +8,13 @@ namespace ShoppingCart.Data.Projections
 
         public override string Type => ProjectionType;
 
-        public List<Product> Products { get; }
+        public Guid UserId { get; }
 
         public int Subtotal { get; }
 
-        public CartProjection(Guid userId, List<Product> products, int subtotal) : base(userId)
+        public CartProjection(Guid userId, int subtotal)
         {
-            Products = products;
+            UserId = userId;
             Subtotal = subtotal;
         }
     }

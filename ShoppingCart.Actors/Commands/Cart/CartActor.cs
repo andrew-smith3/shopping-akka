@@ -66,12 +66,12 @@ namespace ShoppingCart.Actors.Commands.Cart
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("Product not new");
-                    Sender.Tell(e.Message);
+                    var result = CommandResult.Error(e.Message);
+                    Sender.Tell(result);
                     return;
                 }
                 PersistEventAndSnapshot(new ItemAddedToCart(_userId, command.ProductId));
-                Sender.Tell("OK");
+                Sender.Tell(CommandResult.Success());
             });
 
             Command<SaveSnapshotSuccess>(x =>

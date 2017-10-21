@@ -33,19 +33,19 @@ namespace ShoppingCart.Actors
             _commandActor = _system.ActorOf(CommandActor.CreateProps(_queryActor), "commandActor");
         }
 
-        public async Task<string> AddNewProduct(AddNewProductCommand command)
+        public async Task<CommandResult> AddNewProduct(AddNewProductCommand command)
         {
-            return await _commandActor.Ask<string>(command);
+            return await _commandActor.Ask<CommandResult>(command);
         }
 
-        public async Task<string> RestockProduct(RestockProductCommand command)
+        public async Task<CommandResult> RestockProduct(RestockProductCommand command)
         {
-            return await _commandActor.Ask<string>(command);
+            return await _commandActor.Ask<CommandResult>(command);
         }
 
-        public async Task<string> AddProductToCart(AddProductToCartCommand command)
+        public async Task<CommandResult> AddProductToCart(AddProductToCartCommand command)
         {
-            return await _commandActor.Ask<string>(command);
+            return await _commandActor.Ask<CommandResult>(command);
         }
 
 

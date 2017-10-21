@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Newtonsoft.Json;
 
 namespace ShoppingCart.Data.Projections
 {
@@ -10,12 +13,21 @@ namespace ShoppingCart.Data.Projections
 
         public Guid UserId { get; }
 
-        public int Subtotal { get; }
+        public List<ProductProjection> Products { get; }
 
-        public CartProjection(Guid userId, int subtotal)
+        public double Subtotal => Products.Sum(p => p.Price);
+
+        public CartProjection(Guid userId)
         {
             UserId = userId;
-            Subtotal = subtotal;
+            Products = new List<ProductProjection>();
+        }
+
+        [JsonConstructor]
+        public CartProjection(Guid id, DateTime created, Guid userId, List<ProductProjection> products) : base(id, created)
+        {
+            UserId = userId;
+            Products = products;
         }
     }
 }

@@ -6,7 +6,7 @@ using ShoppingCart.Data.Commands.Inventory;
 using ShoppingCart.Data.Events;
 using ShoppingCart.Domain;
 
-namespace ShoppingCart.Actors.Actors.Commands
+namespace ShoppingCart.Actors.Commands
 {
     public class InventoryActor : ReceivePersistentActor
     {
@@ -38,6 +38,7 @@ namespace ShoppingCart.Actors.Actors.Commands
             Recover<NewProductAddedToInventory>(RecoverNewProductAddedToInventory, null);
             Command<AddNewProductCommand>(AddNewProduct, null);
 
+            Recover<ProductRestocked>(RecoverProductRestocked, null);
             Command<RestockProductCommand>(command =>
             {
                 try
@@ -101,6 +102,11 @@ namespace ShoppingCart.Actors.Actors.Commands
                 Stock = e.Stock
             };
             _inventory.AddNewProduct(product);
+        }
+
+        private void RecoverProductRestocked(ProductRestocked ev)
+        {
+            _inventory.RestockProduct(ev.ProductId, ev.AmountAdded);
         }
 
         private void PersistEventAndSnapshot<TEvent>(TEvent domainEvent)

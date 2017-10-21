@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Akka.Actor;
 
-namespace ShoppingCart.Actors.Actors
+namespace ShoppingCart.Actors
 {
     public class ConsoleWriterActor : ReceiveActor
     {
@@ -17,7 +15,5 @@ namespace ShoppingCart.Actors.Actors
         {
             Receive<string>(x => Console.WriteLine(x));
         }
-
-
     }
 }

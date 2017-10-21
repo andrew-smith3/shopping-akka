@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ShoppingCart.Actors;
@@ -12,20 +10,17 @@ using ShoppingCart.Data.DTO;
 namespace ShoppingCart.WebApi.Controllers.Command
 {
     [Route("api/inventory")]
-    public class InventoryCommandController : Controller
+    public class InventoryCommandController : CommandController
     {
-        private readonly CartSystem _cartSystem;
-
-        public InventoryCommandController(CartSystem cartSystem)
+        public InventoryCommandController(CartSystem cartSystem) : base(cartSystem)
         {
-            _cartSystem = cartSystem;
         }
 
         [HttpPost]
         public async Task<IActionResult>  AddNewProduct([FromBody] NewProductDTO dto)
         {
             var command = new AddNewProductCommand(dto.Name, dto.Price, dto.Stock);
-            var result =  await _cartSystem.AddNewProduct(command);
+            var result =  await CartSystem.AddNewProduct(command);
             if (result == "OK")
             {
                 return Ok();
@@ -41,7 +36,7 @@ namespace ShoppingCart.WebApi.Controllers.Command
         public async Task<IActionResult> RestockProduct(Guid productId, [FromBody] int amountToAdd)
         {
             var command = new RestockProductCommand(productId, amountToAdd);
-            var result = await _cartSystem.RestockProduct(command);
+            var result = await CartSystem.RestockProduct(command);
             if (result == "OK")
             {
                 return Ok();

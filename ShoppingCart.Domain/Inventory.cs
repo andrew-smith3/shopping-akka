@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace ShoppingCart.Domain
 {
     public class Inventory
     {
-
-        private IEnumerable<Product> Products => _products;
-
         private readonly List<Product> _products = new List<Product>();
 
         public Inventory()

@@ -16,12 +16,12 @@ namespace ShoppingCart.Console
 
         public static void Basic()
         {
-            var cart = new Cart(Guid.NewGuid());
-            cart.AddProductToCart(new Product { Name = "Foo" });
-            cart.AddProductToCart(new Product { Name = "Bar" });
-            cart.AddProductToCart(new Product { Name = "Foo" });
-
-            System.Console.WriteLine(cart.ToString());
+//            var cart = new Cart(Guid.NewGuid());
+//            cart.AddProductToCart(new Product { Name = "Foo" });
+//            cart.AddProductToCart(new Product { Name = "Bar" });
+//            cart.AddProductToCart(new Product { Name = "Foo" });
+//
+//            System.Console.WriteLine(cart.ToString());
         }
 
         public static void Actors()

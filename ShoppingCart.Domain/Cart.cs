@@ -10,27 +10,26 @@ namespace ShoppingCart.Domain
     {
         public Guid UserId { get; }
 
-        public List<Product> Products { get; }
+        public List<Guid> Products { get; }
 
-        public Cart(Guid userId) : this(userId, new List<Product>())
+        public Cart(Guid userId) : this(userId, new List<Guid>())
         {
         }
 
         [JsonConstructor]
-        public Cart(Guid userId, List<Product> products)
+        public Cart(Guid userId, List<Guid> products)
         {
             UserId = userId;
             Products = products;
         }
 
-        public void AddProductToCart(Product product)
+        public void AddProductToCart(Guid newProductId)
         {
-            Products.Add(product);
-        }
-
-        public double GetSubtotal()
-        {
-            return Products.Sum(x => x.Price);
+            if (Products.Any(p => newProductId == p))
+            {
+                throw new Exception("Product already in cart");
+            }
+            Products.Add(newProductId);
         }
 
         public override string ToString()

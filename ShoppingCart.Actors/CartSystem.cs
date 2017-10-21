@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using Akka.Actor;
+﻿using Akka.Actor;
 using Akka.Configuration;
 using Akka.Persistence.Sqlite;
-using ShoppingCart.Actors.Actors;
-using ShoppingCart.Data.Commands;
+using ShoppingCart.Data.Commands.Cart;
 using ShoppingCart.Data.Commands.Inventory;
+using ShoppingCart.Data.Projections;
+using ShoppingCart.Data.Queries.Cart;
+using System.Threading.Tasks;
 
 namespace ShoppingCart.Actors
 {
@@ -15,7 +13,7 @@ namespace ShoppingCart.Actors
     {
         private readonly ActorSystem _system;
         private readonly IActorRef _commandActor;
-        private readonly IActorRef _eventHubActor;
+        private readonly IActorRef _queryActor;
 
         public CartSystem()
         {
@@ -31,8 +29,8 @@ namespace ShoppingCart.Actors
             _system = ActorSystem.Create("CartActorSystem", config);
             SqlitePersistence.Get(_system);
 
-            _commandActor = _system.ActorOf(CommandActor.CreateProps(), "commandActor");
-            _eventHubActor = _system.ActorOf(EventHubActor.CreateProps(), "eventhub");
+            _queryActor = _system.ActorOf(QueryActor.CreateProps(), "queryActor");
+            _commandActor = _system.ActorOf(CommandActor.CreateProps(_queryActor), "commandActor");
         }
 
         public async Task<string> AddNewProduct(AddNewProductCommand command)
@@ -43,6 +41,17 @@ namespace ShoppingCart.Actors
         public async Task<string> RestockProduct(RestockProductCommand command)
         {
             return await _commandActor.Ask<string>(command);
+        }
+
+        public async Task<string> AddProductToCart(AddProductToCartCommand command)
+        {
+            return await _commandActor.Ask<string>(command);
+        }
+
+
+        public async Task<CartProjection> GetCart(CartQuery query)
+        {
+            return await _queryActor.Ask<CartProjection>(query);
         }
     }
 }

@@ -2,29 +2,30 @@
 using System.Collections.Generic;
 using Akka.Actor;
 using Akka.Util.Internal;
+using ShoppingCart.Actors.Commands;
+using ShoppingCart.Actors.Commands.Cart;
 using ShoppingCart.Data.Commands;
-using ShoppingCart.Actors.Actors.Commands;
 
-namespace ShoppingCart.Actors.Actors
+namespace ShoppingCart.Actors
 {
     public class CommandActor : ReceiveActor
     {
-        public static Props CreateProps()
+        public static Props CreateProps(IActorRef queryActor)
         {
-            return Props.Create(() => new CommandActor());
+            return Props.Create(() => new CommandActor(queryActor));
         }
 
         private readonly Dictionary<Type, IActorRef> _registry = new Dictionary<Type, IActorRef>();
 
-        public CommandActor()
+        public CommandActor(IActorRef queryActor)
         {
             var consoleWriterActor = Context.ActorOf(ConsoleWriterActor.CreateProps());
 
-            var cartCoordinatorActor = Context.ActorOf(CartCoordinatorActor.CreateProps(consoleWriterActor));
-            RegisterActor(cartCoordinatorActor, CartCoordinatorActor.AcceptedCommands());
-
             var inventoryActor = Context.ActorOf(InventoryActor.CreateProps());
             RegisterActor(inventoryActor, InventoryActor.AcceptedCommands());
+
+            var cartCoordinatorActor = Context.ActorOf(CartCoordinatorActor.CreateProps(queryActor, consoleWriterActor));
+            RegisterActor(cartCoordinatorActor, CartCoordinatorActor.AcceptedCommands());
 
             Ready();
         }
@@ -50,6 +51,11 @@ namespace ShoppingCart.Actors.Actors
                     Sender.Tell("No actor registered to accept command.");
                 }
             });
+        }
+
+        protected override void Unhandled(object message)
+        {
+            Console.WriteLine($"Message of type {message.GetType()} was unhandled");
         }
     }
 }

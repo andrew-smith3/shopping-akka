@@ -23,11 +23,11 @@ namespace ShoppingCart.WebApi.Controllers.Command
         {
             var command = new AddProductToCartCommand(userId, dto.ProductId);
             var result = await CartSystem.AddProductToCart(command);
-            if (result == "OK")
+            if (result.IsSuccessful)
             {
                 return Ok();
             };
-            return BadRequest(result);
+            return BadRequest(result.Message);
         }
     }
 }

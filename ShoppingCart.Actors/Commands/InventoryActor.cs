@@ -47,13 +47,13 @@ namespace ShoppingCart.Actors.Commands
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("Restock error");
-                    Sender.Tell(e.Message);
+                    var result = CommandResult.Error(e.Message);
+                    Sender.Tell(result);
                     return;
                 }
                 var ev = new ProductRestocked(command.ProductId, command.AmountToAdd);
                 PersistEventAndSnapshot(ev);
-                Sender.Tell("OK");
+                Sender.Tell(CommandResult.Success());
             });
 
             Command<SaveSnapshotSuccess>(x =>
@@ -82,14 +82,14 @@ namespace ShoppingCart.Actors.Commands
             }
             catch (Exception e)
             {
-                Console.WriteLine("Product not new");
-                Sender.Tell(e.Message);
+                var result = CommandResult.Error(e.Message);
+                Sender.Tell(result);
                 return;
             }
 
             var ev = new NewProductAddedToInventory(c.Id, c.Name, c.Price, c.Stock);
             PersistEventAndSnapshot(ev);
-            Sender.Tell("OK");
+            Sender.Tell(CommandResult.Success());
         }
 
         private void RecoverNewProductAddedToInventory(NewProductAddedToInventory e)

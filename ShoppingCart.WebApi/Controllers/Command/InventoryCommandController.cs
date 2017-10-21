@@ -21,14 +21,11 @@ namespace ShoppingCart.WebApi.Controllers.Command
         {
             var command = new AddNewProductCommand(dto.Name, dto.Price, dto.Stock);
             var result =  await CartSystem.AddNewProduct(command);
-            if (result == "OK")
+            if (result.IsSuccessful)
             {
                 return Ok();
             }
-            else
-            {
-                return BadRequest(result);
-            }
+            return BadRequest(result.Message);
         }
 
         [HttpPost]
@@ -37,14 +34,11 @@ namespace ShoppingCart.WebApi.Controllers.Command
         {
             var command = new RestockProductCommand(productId, amountToAdd);
             var result = await CartSystem.RestockProduct(command);
-            if (result == "OK")
+            if (result.IsSuccessful)
             {
                 return Ok();
             }
-            else
-            {
-                return BadRequest(result);
-            }
+            return BadRequest(result.Message);
         }
     }
 }

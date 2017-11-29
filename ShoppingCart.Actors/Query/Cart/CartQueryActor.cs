@@ -2,10 +2,11 @@
 using Akka.Actor;
 using Newtonsoft.Json;
 using ShoppingCart.Data.Events;
+using ShoppingCart.Data.Persistence;
 using ShoppingCart.Data.Projections;
-using ShoppingCart.Data.ProjectionStore;
 using ShoppingCart.Data.Queries.Cart;
 using ShoppingCart.Data.Queries.Inventory;
+using ShoppingCart.Data.ReadModels;
 
 namespace ShoppingCart.Actors.Query.Cart
 {
@@ -23,8 +24,8 @@ namespace ShoppingCart.Actors.Query.Cart
 
         private readonly Guid _userId;
         private readonly IActorRef _inventoryQueryActor;
-        private readonly SqliteProjectionStore _projectionStore = new SqliteProjectionStore();
-        private CartProjection _cartProjection;
+        private readonly SqliteStore _store = new SqliteStore();
+        private CartReadModel _cartReadModel;
 
         public CartQueryActor(Guid userId, IActorRef inventoryQueryActor)
         {
@@ -38,14 +39,10 @@ namespace ShoppingCart.Actors.Query.Cart
 
         private void InitializeProjection()
         {
-            var data = _projectionStore.Retrieve(_userId, CartProjection.ProjectionType);
-            if (data == string.Empty)
+            var data = _store.Retrieve<CartReadModel>(_userId);
+            if (data == null)
             {
-                _cartProjection = new CartProjection(_userId);
-            }
-            else
-            {
-                _cartProjection = JsonConvert.DeserializeObject<CartProjection>(data);
+                _cartReadModel = new CartReadModel(_userId);
             }
         }
 
@@ -53,14 +50,14 @@ namespace ShoppingCart.Actors.Query.Cart
         {
             Receive<CartQuery>(q =>
             {
-                Sender.Tell(_cartProjection);
+                Sender.Tell(_cartReadModel);
             });
 
             ReceiveAsync<ItemAddedToCart>(async i =>
             {
-                var product = await _inventoryQueryActor.Ask<ProductProjection>(new ProductQuery(i.ProductId));
-                _cartProjection.Products.Add(product);
-                _projectionStore.Store(_userId, _cartProjection.Type, JsonConvert.SerializeObject(_cartProjection));
+                var product = await _inventoryQueryActor.Ask<ProductReadModel>(new ProductQuery(i.ProductId));
+                _cartReadModel.Products.Add(product);
+                _store.Save(_cartReadModel);
             });
         }
     }

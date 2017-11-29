@@ -6,6 +6,8 @@ using ShoppingCart.Data.Commands.Inventory;
 using ShoppingCart.Data.Projections;
 using ShoppingCart.Data.Queries.Cart;
 using System.Threading.Tasks;
+using ShoppingCart.Data.Queries.Inventory;
+using ShoppingCart.Data.ReadModels;
 
 namespace ShoppingCart.Actors
 {
@@ -48,10 +50,14 @@ namespace ShoppingCart.Actors
             return await _commandActor.Ask<CommandResult>(command);
         }
 
-
-        public async Task<CartProjection> GetCart(CartQuery query)
+        public async Task<InventoryReadModel> GetInventory(InventoryQuery query)
         {
-            return await _queryActor.Ask<CartProjection>(query);
+            return await _queryActor.Ask<InventoryReadModel>(query);
+        }
+
+        public async Task<CartReadModel> GetCart(CartQuery query)
+        {
+            return await _queryActor.Ask<CartReadModel>(query);
         }
     }
 }

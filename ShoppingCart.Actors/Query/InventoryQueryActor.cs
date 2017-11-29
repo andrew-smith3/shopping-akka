@@ -5,15 +5,14 @@ using Akka.Actor;
 using Akka.Util.Internal;
 using Newtonsoft.Json;
 using ShoppingCart.Data.Events;
-using ShoppingCart.Data.Projections;
-using ShoppingCart.Data.ProjectionStore;
+using ShoppingCart.Data.Persistence;
 using ShoppingCart.Data.Queries.Inventory;
+using ShoppingCart.Data.ReadModels;
 
 namespace ShoppingCart.Actors.Query
 {
     public class InventoryQueryActor : ReceiveActor
     {
-
         public static Props CreateProps()
         {
             return Props.Create(() => new InventoryQueryActor());
@@ -23,6 +22,7 @@ namespace ShoppingCart.Actors.Query
         {
             yield return typeof(ProductStockStatusQuery);
             yield return typeof(ProductQuery);
+            yield return typeof(InventoryQuery);
         }
 
         public static IEnumerable<Type> Events()
@@ -31,12 +31,12 @@ namespace ShoppingCart.Actors.Query
             yield return typeof(ProductRestocked);
         }
 
-        private readonly SqliteProjectionStore _projectionStore;
-        private InventoryProjection _projection;
+        private readonly SqliteStore _store;
+        private InventoryReadModel _readModel;
 
         public InventoryQueryActor()
         {
-            _projectionStore = new SqliteProjectionStore();
+            _store = new SqliteStore();
             InitializeProjection();
             Events().ForEach(eventType =>
             {
@@ -47,14 +47,10 @@ namespace ShoppingCart.Actors.Query
 
         private void InitializeProjection()
         {
-            var projectionData = _projectionStore.Retrieve(Guid.Empty, InventoryProjection.ProjectionType);
-            if (string.IsNullOrEmpty(projectionData))
+            var readModel = _store.Retrieve<InventoryReadModel>(Guid.Empty);
+            if (readModel == null)
             {
-                _projection = new InventoryProjection();
-            }
-            else
-            {
-                _projection = JsonConvert.DeserializeObject<InventoryProjection>(projectionData);
+                _readModel = new InventoryReadModel(Guid.Empty);
             }
         }
 
@@ -66,15 +62,20 @@ namespace ShoppingCart.Actors.Query
 
         private void SetupQueryHandlers()
         {
+            Receive<InventoryQuery>(q =>
+            {
+                Sender.Tell(_readModel);
+            });
+
             Receive<ProductStockStatusQuery>(q =>
             {
-                var inStock = _projection.Inventory.Any(p => p.Id == q.ProductId);
+                var inStock = _readModel.Products.Any(p => p.Id == q.ProductId);
                 Sender.Tell(inStock);
             });
 
             Receive<ProductQuery>(q =>
             {
-                var product = _projection.Inventory.First(p => p.Id == q.ProductId);
+                var product = _readModel.Products.First(p => p.Id == q.ProductId);
                 Sender.Tell(product);
             });
         }
@@ -83,29 +84,23 @@ namespace ShoppingCart.Actors.Query
         {
             Receive<NewProductAddedToInventory>(e =>
             {
-                var product = new ProductProjection
-                {
-                    Id = e.Id,
-                    Name = e.Name,
-                    Stock = e.Stock,
-                    Price = e.Price
-                };
+                var product = new ProductReadModel(e.Id, e.Name, e.Price, e.Stock);
 
-                _projection.Inventory.Add(product);
+                _readModel.Products.Add(product);
                 Persist();
             });
 
             Receive<ProductRestocked>(e =>
             {
-                var product = _projection.Inventory.First(p => p.Id == e.ProductId);
-                product.Stock += e.AmountAdded;
+                var product = _readModel.Products.First(p => p.Id == e.ProductId);
+                product.AddStock(e.AmountAdded);
                 Persist();
             });
         }
 
         private void Persist()
         {
-            _projectionStore.Store(Guid.Empty, InventoryProjection.ProjectionType, JsonConvert.SerializeObject(_projection));
+            _store.Save(_readModel);
         }
     }
 }

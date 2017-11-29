@@ -4,8 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using ShoppingCart.Actors;
+using ShoppingCart.Data.Persistence;
 using ShoppingCart.Data.Projections;
-using ShoppingCart.Data.ProjectionStore;
+using ShoppingCart.Data.Queries.Inventory;
+using ShoppingCart.Data.ReadModels;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -14,17 +17,18 @@ namespace ShoppingCart.WebApi.Controllers.Query
     [Route("api/inventory")]
     public class InventoryQueryController : Controller
     {
-        private SqliteProjectionStore _projectionStore;
+        private readonly CartSystem _cartSystem;
 
-        public InventoryQueryController(SqliteProjectionStore projectionStore)
+        public InventoryQueryController(CartSystem cartSystem)
         {
-            _projectionStore = projectionStore;
+            _cartSystem = cartSystem;
         }
 
         [HttpGet]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
-            return Ok(JsonConvert.DeserializeObject<InventoryProjection>(_projectionStore.Retrieve(Guid.Empty, InventoryProjection.ProjectionType)));
+            var inventory = await _cartSystem.GetInventory(new InventoryQuery());
+            return Ok(inventory);
         }
     }
 }

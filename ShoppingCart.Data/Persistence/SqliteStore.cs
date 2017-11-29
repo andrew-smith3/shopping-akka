@@ -1,15 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.Data.Sqlite;
+using Newtonsoft.Json;
+using ShoppingCart.Data.ReadModels;
 
-namespace ShoppingCart.Data.ProjectionStore
+namespace ShoppingCart.Data.Persistence
 { 
-    public class SqliteProjectionStore
+    public class SqliteStore : IRetrieveReadModels, ISaveReadModels
     {
-        private string _connectionString;
+        private readonly string _connectionString;
 
-        public SqliteProjectionStore()
+        public SqliteStore()
         {
             _connectionString = new SqliteConnectionStringBuilder
             {
@@ -19,8 +19,10 @@ namespace ShoppingCart.Data.ProjectionStore
             CreateTableIfNotExists();
         }
 
-        public void Store(Guid id, string type, string data)
+        public void Save<T>(T readModel) where T : ReadModel
         {
+            var data = JsonConvert.SerializeObject(readModel);
+            var type = nameof(T);
             using (var connection = Connect())
             {
                 connection.Open();
@@ -29,7 +31,7 @@ namespace ShoppingCart.Data.ProjectionStore
                     var command = connection.CreateCommand();
                     command.Transaction = transaction;
                     command.CommandText = "INSERT OR REPLACE INTO projections ( id, type, data ) VALUES ( $id, $type, $data)";
-                    command.Parameters.AddWithValue("$id", id.ToString());
+                    command.Parameters.AddWithValue("$id", readModel.Id.ToString());
                     command.Parameters.AddWithValue("$type", type);
                     command.Parameters.AddWithValue("$data", data);
                     command.ExecuteNonQuery();
@@ -39,12 +41,13 @@ namespace ShoppingCart.Data.ProjectionStore
             }
         }
 
-        public string Retrieve(Guid id, string type)
+        public T Retrieve<T>(Guid id) where T : ReadModel
         {
+            const string type = nameof(T);
             using (var connection = Connect())
             {
                 connection.Open();
-                
+
                 var command = connection.CreateCommand();
                 command.CommandText = "SELECT data FROM projections WHERE id=$id AND type=$type LIMIT 1";
                 command.Parameters.AddWithValue("$id", id.ToString());
@@ -54,11 +57,12 @@ namespace ShoppingCart.Data.ProjectionStore
                 {
                     if (reader.Read())
                     {
-                        return reader.GetString(0);
+                        var json = reader.GetString(0);
+                        return JsonConvert.DeserializeObject<T>(json);
                     }
-                    return string.Empty;
                 }
             }
+            return null;
         }
 
         private SqliteConnection Connect()
@@ -83,5 +87,7 @@ namespace ShoppingCart.Data.ProjectionStore
                 }
             }
         }
+
+        
     }
 }

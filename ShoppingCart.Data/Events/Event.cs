@@ -6,7 +6,6 @@ namespace ShoppingCart.Data.Events
 {
     public abstract class Event
     {
-
         public Guid Id { get; }
 
         public DateTime Date { get; }

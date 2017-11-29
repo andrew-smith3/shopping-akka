@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ShoppingCart.Actors;
-using ShoppingCart.Data.ProjectionStore;
 
 namespace ShoppingCart.WebApi
 {
@@ -26,10 +25,7 @@ namespace ShoppingCart.WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             var system = new CartSystem();
-            var projectionStore = new SqliteProjectionStore();
-
             services.AddSingleton<CartSystem>(system);
-            services.AddSingleton<SqliteProjectionStore>(projectionStore);
             services.AddMvc();
         }
 
@@ -40,7 +36,6 @@ namespace ShoppingCart.WebApi
             {
                 app.UseDeveloperExceptionPage();
             }
-
             app.UseMvc();
         }
     }

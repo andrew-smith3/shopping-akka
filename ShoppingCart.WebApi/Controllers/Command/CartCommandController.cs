@@ -16,13 +16,25 @@ namespace ShoppingCart.WebApi.Controllers.Command
         {
         }
 
-        // POST api/values
         [HttpPost]
         [Route("{userId}")]
         public async Task<IActionResult> Post(Guid userId, [FromBody]AddProductToCartDTO dto)
         {
             var command = new AddProductToCartCommand(userId, dto.ProductId);
             var result = await CartSystem.AddProductToCart(command);
+            if (result.IsSuccessful)
+            {
+                return Ok();
+            };
+            return BadRequest(result.Message);
+        }
+
+        [HttpDelete]
+        [Route("{userId}/products/{productId}")]
+        public async Task<IActionResult> Post(Guid userId, Guid productId)
+        {
+            var command = new RemoveProductFromCartCommand(userId, productId);
+            var result = await CartSystem.RemoveProductFromCart(command);
             if (result.IsSuccessful)
             {
                 return Ok();

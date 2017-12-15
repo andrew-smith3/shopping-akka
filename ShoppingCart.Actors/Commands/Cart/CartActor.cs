@@ -39,7 +39,7 @@ namespace ShoppingCart.Actors.Commands.Cart
 
         private void Ready()
         {
-            Recover<ItemAddedToCart>(ev =>
+            Recover<ProductAddedToCart>(ev =>
             {
                 _cart.AddProductToCart(ev.ProductId);
             });
@@ -70,7 +70,24 @@ namespace ShoppingCart.Actors.Commands.Cart
                     Sender.Tell(result);
                     return;
                 }
-                PersistEventAndSnapshot(new ItemAddedToCart(_userId, command.ProductId));
+                PersistEventAndSnapshot(new ProductAddedToCart(_userId, command.ProductId));
+                Sender.Tell(CommandResult.Success());
+            });
+
+            Command<RemoveProductFromCartCommand>(command =>
+            {
+                try
+                {
+                    _cart.RemoveProductFromCart(command.ProductId);
+                }
+                catch (Exception e)
+                {
+                    var result = CommandResult.Error(e.Message);
+                    Sender.Tell(result);
+                    return;
+                }
+
+                PersistEventAndSnapshot(new ProductRemovedFromCart(_userId, command.ProductId));
                 Sender.Tell(CommandResult.Success());
             });
 

@@ -43,11 +43,11 @@ namespace ShoppingCart.Data.Persistence
 
         public T Retrieve<T>(Guid id) where T : ReadModel
         {
-            const string type = nameof(T);
             using (var connection = Connect())
             {
                 connection.Open();
 
+                var type = typeof(T).FullName;
                 var command = connection.CreateCommand();
                 command.CommandText = "SELECT data FROM projections WHERE id=$id AND type=$type LIMIT 1";
                 command.Parameters.AddWithValue("$id", id.ToString());

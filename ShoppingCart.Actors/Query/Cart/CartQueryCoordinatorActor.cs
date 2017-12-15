@@ -11,7 +11,8 @@ namespace ShoppingCart.Actors.Query.Cart
     {
         private static IEnumerable<Type> GetEventTypes()
         {
-            yield return typeof(ItemAddedToCart);
+            yield return typeof(ProductAddedToCart);
+            yield return typeof(ProductRemovedFromCart);
         }
 
         public static Props CreateProps(IActorRef inventoryActor)
@@ -44,7 +45,12 @@ namespace ShoppingCart.Actors.Query.Cart
                 ForwardToChild(q.UserId, q);
             });
         
-            Receive<ItemAddedToCart>(e =>
+            Receive<ProductAddedToCart>(e =>
+            {
+                ForwardToChild(e.UserId, e);
+            });
+
+            Receive<ProductRemovedFromCart>(e =>
             {
                 ForwardToChild(e.UserId, e);
             });

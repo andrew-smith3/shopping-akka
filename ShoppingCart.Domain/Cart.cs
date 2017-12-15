@@ -32,6 +32,18 @@ namespace ShoppingCart.Domain
             Products.Add(newProductId);
         }
 
+        public void RemoveProductFromCart(Guid productId)
+        {
+            if (Products.Any(p => productId == p))
+            {
+                Products.Remove(productId);
+            }
+            else
+            {
+                throw new Exception("Product not in cart");
+            }
+        }
+
         public override string ToString()
         {
             var sb = new StringBuilder();

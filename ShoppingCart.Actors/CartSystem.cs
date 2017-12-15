@@ -50,6 +50,11 @@ namespace ShoppingCart.Actors
             return await _commandActor.Ask<CommandResult>(command);
         }
 
+        public async Task<CommandResult> RemoveProductFromCart(RemoveProductFromCartCommand command)
+        {
+            return await _commandActor.Ask<CommandResult>(command);
+        }
+
         public async Task<InventoryReadModel> GetInventory(InventoryQuery query)
         {
             return await _queryActor.Ask<InventoryReadModel>(query);

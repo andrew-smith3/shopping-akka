@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace ShoppingCart.Data.ReadModels
 {
@@ -12,6 +13,7 @@ namespace ShoppingCart.Data.ReadModels
             Products = new List<ProductReadModel>();
         }
 
+        [JsonConstructor]
         public InventoryReadModel(Guid id, List<ProductReadModel> products) : base(id)
         {
             Products = products;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Akka.Actor;
 using Newtonsoft.Json;
 using ShoppingCart.Data.Events;
@@ -53,10 +54,17 @@ namespace ShoppingCart.Actors.Query.Cart
                 Sender.Tell(_cartReadModel);
             });
 
-            ReceiveAsync<ItemAddedToCart>(async i =>
+            ReceiveAsync<ProductAddedToCart>(async e =>
             {
-                var product = await _inventoryQueryActor.Ask<ProductReadModel>(new ProductQuery(i.ProductId));
+                var product = await _inventoryQueryActor.Ask<ProductReadModel>(new ProductQuery(e.ProductId));
                 _cartReadModel.Products.Add(product);
+                _store.Save(_cartReadModel);
+            });
+
+            Receive<ProductRemovedFromCart>(e =>
+            {
+                var product = _cartReadModel.Products.First(p => p.Id == e.ProductId);
+                _cartReadModel.Products.Remove(product);
                 _store.Save(_cartReadModel);
             });
         }
